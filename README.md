@@ -2,6 +2,8 @@
 
 An intelligent link saving application that uses AI to automatically summarize and categorize your links.
 
+![Landing Page Preview](public/landing.png)
+
 ## Features
 
 - **User Authentication**: Secure registration and login with JWT. Includes password confirmation for new accounts.
