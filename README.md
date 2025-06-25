@@ -4,6 +4,8 @@ An intelligent link saving application that uses AI to automatically summarize a
 
 ![Landing Page Preview](public/landing.png)
 
+[![Watch the video]](public/screen-capture.webm)
+
 ## Features
 
 - **User Authentication**: Secure registration and login with JWT. Includes password confirmation for new accounts.
@@ -25,10 +27,12 @@ An intelligent link saving application that uses AI to automatically summarize a
 ## Setup
 
 ### 1. Prerequisites
+
 - [Node.js](https://nodejs.org/) (v18 or later recommended)
 - A PostgreSQL database. You can use a free provider like [Neon](https://neon.tech/).
 
 ### 2. Configure Environment Variables
+
 1.  In the root of the project, create a file named `.env`.
 2.  Copy the contents of `.env.example` into your new `.env` file.
 3.  Fill in the values in your `.env` file:
@@ -38,6 +42,7 @@ An intelligent link saving application that uses AI to automatically summarize a
     - `PORT`: The port for the backend server (defaults to 3001).
 
 ### 3. Install & Run
+
 1.  Install dependencies for both the root and the `server` directory:
     ```bash
     npm install
@@ -57,11 +62,13 @@ Your application should now be running. Open your browser to the frontend URL to
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
 - `GET /api/auth/me` - Get current user info
 
 ### Links
+
 - `POST /api/links` - Save a new link
 - `GET /api/links` - Get all user's links
 - `GET /api/links/:id` - Get specific link details
@@ -70,18 +77,21 @@ Your application should now be running. Open your browser to the frontend URL to
 ## Features in Detail
 
 ### Link Processing Pipeline
+
 1. **URL Validation**: Ensures valid URL format
 2. **Metadata Extraction**: Fetches page title, description, and Open Graph image
 3. **AI Analysis**: Gemini AI analyzes content for tagging and summarization
 4. **Database Storage**: Saves all data with user association
 
 ### Security Features
+
 - Password hashing with bcrypt
 - JWT token authentication
 - Protected API routes
 - SQL injection prevention with parameterized queries
 
 ### User Experience
+
 - Real-time search and filtering
 - Responsive grid and list views
 - Smooth loading states
