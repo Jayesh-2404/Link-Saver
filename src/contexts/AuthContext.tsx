@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
-
+import api from '../api'
 interface User {
   id: string;
   email: string;
@@ -33,20 +32,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      validateToken(token);
+      validateToken();
     } else {
       setLoading(false);
     }
   }, []);
 
-  const validateToken = async (token: string) => {
+  const validateToken = async () => {
     try {
-      const response = await axios.get('/api/auth/me');
-      setUser(response.data.user);
+     const response = await api.get('/auth/me')
+     setUser(response.data.user)
     } catch (error) {
       localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
     } finally {
       setLoading(false);
     }
@@ -54,13 +51,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       const { token, user } = response.data;
-      
+
       localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
-      
+
       toast.success('Welcome back!');
       return true;
     } catch (error: any) {
@@ -71,13 +67,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await axios.post('/api/auth/register', { email, password });
+      const response = await api.post('/auth/register', { email, password });
       const { token, user } = response.data;
-      
+
       localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
-      
+
       toast.success('Account created successfully!');
       return true;
     } catch (error: any) {
@@ -88,18 +83,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
     setUser(null);
     toast.success('Logged out successfully');
   };
 
-  const value = {
-    user,
-    loading,
-    login,
-    register,
-    logout,
-  };
-
+  const value = { user, loading, login, register, logout, };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

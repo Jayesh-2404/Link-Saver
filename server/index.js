@@ -14,7 +14,13 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+
+const corsOptions  = {
+  origin: process.env.FRONTEND_URL,
+  optionSuccessStatus:200
+};
+app.use(cors(corsOptions))
+
 app.use(express.json());
 
 // Database connection
@@ -77,7 +83,7 @@ const authenticateToken = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const result = await pool.query('SELECT id, email, created_at FROM users WHERE id = $1', [decoded.userId]);
-    
+
     if (result.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid token' });
     }
@@ -96,7 +102,7 @@ app.post('/api/auth/register', async (req, res) => {
   try {
     // Check if user already exists
     const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
-    
+
     if (existingUser.rows.length > 0) {
       return res.status(400).json({ message: 'User already exists' });
     }
@@ -135,7 +141,7 @@ app.post('/api/auth/login', async (req, res) => {
   try {
     // Find user
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    
+
     if (result.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -144,7 +150,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
-    
+
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -184,7 +190,7 @@ app.post('/api/links', authenticateToken, async (req, res) => {
 
     // Extract metadata
     const title = $('title').text() || $('meta[property="og:title"]').attr('content') || 'Untitled';
-    const description = $('meta[name="description"]').attr('content') || 
+    const description = $('meta[name="description"]').attr('content') ||
                        $('meta[property="og:description"]').attr('content') || '';
     const imageUrl = $('meta[property="og:image"]').attr('content') || '';
     const domain = new URL(url).hostname;
@@ -205,7 +211,7 @@ URL: ${url}`;
 
       const tagResult = await model.generateContent(tagPrompt);
       const tagResponse = await tagResult.response;
-      tags = tagResponse.text().split(',').map(tag => tag.trim()).filter(tag => 
+      tags = tagResponse.text().split(',').map(tag => tag.trim()).filter(tag =>
         ['Image', 'Video', 'News', 'Blog', 'Music', 'Social Media Post'].includes(tag)
       );
 
@@ -226,8 +232,8 @@ Description: ${description}`;
 
     // Save to database
     const result = await pool.query(
-      `INSERT INTO links (user_id, url, title, description, image_url, domain, tags, summary) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+      `INSERT INTO links (user_id, url, title, description, image_url, domain, tags, summary)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING *`,
       [userId, url, title, description, imageUrl, domain, tags, summary]
     );

@@ -5,6 +5,7 @@ import LinkCard from '../Links/LinkCard';
 import { Plus, Search, Filter, Grid, List, PlusCircle } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import api from '../../api';
 
 interface SavedLink {
   id: string;
@@ -30,10 +31,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchLinks = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/api/links', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await api.get('/links');
         setLinks(response.data.links);
       } catch (error) {
         console.error('Failed to fetch links:', error);
@@ -50,14 +48,14 @@ const Dashboard = () => {
   const filteredLinks = links.filter(link => {
     const matchesSearch = link.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          link.domain.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTags = selectedTags.length === 0 || 
+    const matchesTags = selectedTags.length === 0 ||
                        selectedTags.some(tag => link.tags.includes(tag));
     return matchesSearch && matchesTags;
   });
 
   const toggleTag = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
+    setSelectedTags(prev =>
+      prev.includes(tag)
         ? prev.filter(t => t !== tag)
         : [...prev, tag]
     );
@@ -99,7 +97,7 @@ const Dashboard = () => {
           <p>Try adjusting your search or adding new links.</p>
         </div>
       ) : (
-        <div className={viewMode === 'grid' 
+        <div className={viewMode === 'grid'
           ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
           : 'space-y-4'
         }>
