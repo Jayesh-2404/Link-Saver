@@ -1,21 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import toast from 'react-hot-toast';
+import api from '../../api';
+
 
 const AddLink = () => {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('/api/links', { url }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+     
+      await api.post('/links', { url });
       toast.success('Link saved successfully');
       navigate('/dashboard');
     } catch (error) {

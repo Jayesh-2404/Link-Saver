@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import axios from 'axios';
+import api from '../../api';
 import toast from 'react-hot-toast';
 
 interface LinkDetails {
@@ -25,10 +25,7 @@ const LinkDetails = () => {
   useEffect(() => {
     const fetchLink = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`/api/links/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+          const response = await api.get(`/links/${id}`);
         setLink(response.data.link);
       } catch (error) {
         console.error('Failed to fetch link:', error);
@@ -43,10 +40,7 @@ const LinkDetails = () => {
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this link?')) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/links/${link.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+         await api.delete(`/links/${link.id}`);
         toast.success('Link deleted successfully');
         navigate('/dashboard');
       } catch (error) {
@@ -99,9 +93,9 @@ const LinkDetails = () => {
       </div>
 
       <div className="bg-white p-8 rounded-lg shadow-md border border-gray-200">
-        <img 
-          src={link.image_url || 'https://via.placeholder.com/400x200?text=No+Image'} 
-          alt={link.title} 
+        <img
+          src={link.image_url || 'https://via.placeholder.com/400x200?text=No+Image'}
+          alt={link.title}
           className="w-full h-auto object-cover rounded-md mb-6"
           onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x200?text=No+Image'; }}
         />
@@ -109,7 +103,7 @@ const LinkDetails = () => {
         <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all mb-6 block">
           {link.url}
         </a>
-        
+
         {link.summary && (
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-2">Summary</h2>
