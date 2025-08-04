@@ -13,11 +13,24 @@ const { Pool } = pkg;
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const allowedOrigins = [
+  'https://link-saver-zeta.vercel.app',
+  'http://localhost:5173'
+];
 // Middleware
 
-const corsOptions  = {
-  origin: process.env.FRONTEND_URL,
-  optionSuccessStatus:200
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow requests with no origin
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  optionSuccessStatus: 200
 };
 app.use(cors(corsOptions))
 
